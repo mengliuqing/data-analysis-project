@@ -1,0 +1,51 @@
+#数据任务：aiabnb房价预测，根据房屋特性定了价，现在手里有个房子应该定什么价，看看跟我差不多的房子卖多少钱。
+#knn算法原理：选择K个跟我们数据最像的
+#衡量最近原理：欧式距离
+#模型评估标准：均方根误差RMSE 越低越好
+#代码实现
+----数据读取-----
+import pandas as pd
+feature=['accomodates','bedrooms','bathroom','beds','price']
+data=pd.read_csv('rr.txt')
+data=data[feature]   #选取我们需要的特征
+print(data.shape)#数据集大小
+data.head()#查看下数据集情况
+----看看数据分布情况-----
+import numpy as np
+our_acc_value=3
+data['distance']=np.abs(data.accommodates-our_acc_value)   求绝对值 并赋值给距离这个新列。
+data.distance.value_counts().sort_index()  排序
+我们要预测的是三个房间的价格，那么现在看看有多少数据跟我们差距为0 的就是3个房间。
+0  461
+1 2294
+2  503
+3  279
+4  35
+....
+可以看出跟我们距离为0的（同样数量房间的）有461个
+---然后要洗牌了----
+data=data.sample(frac=1,random_state=0)  #Returns a random sample of items from an axis of object.
+data=data.sort_values('distance')   按照列distance排序数据，默认升序排列
+data.price.head()
+data.price.head()
+-----price格式转换------
+data['price']=data.price.str.replace("\$|,",'').astype(float)
+mean_price=data.price.iloc[:5].mean()
+-----模型评估----
+1.划分训练集和测试集
+data.drop('distance',axis=1)
+train_df=data.copy().iloc[:2829]
+test_df=data.copy().iloc[2829:]
+2.基于单变量预测价格
+def predict_price(new_listing_value,feature_column):  
+  temp_df=train_df
+  temp_df['distance']=np.abs(data[feature_column]-new_listing_value)  #制定好要算哪个列并赋给distance
+  temp_df=temp_df.sort_values('distance') 距离排序
+  knn_5=temp_df.price.iloc[:5]  取前5个
+  predicted_price=knn5.mean()  平均值
+  return predicted_price
+3.测试
+test_df['predicted']=test_df.accommodates.apply(predict_price,feature_column='accommodates')
+test_df['squred_error']=(test_df['predicted_price']-test_df['price'])**(2）
+mse=test_df['squred_error'].mean()
+rmse=mse**(1/2)
