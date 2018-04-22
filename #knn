@@ -21,7 +21,7 @@ data.distance.value_counts().sort_index()  排序
 2  503
 3  279
 4  35
-....
+a....
 可以看出跟我们距离为0的（同样数量房间的）有461个
 ---然后要洗牌了----
 data=data.sample(frac=1,random_state=0)  #Returns a random sample of items from an axis of object.
@@ -47,6 +47,7 @@ def predict_price(new_listing_value,feature_column):
 3.测试
 test_df['predicted']=test_df.accommodates.apply(predict_price,feature_column='accommodates')
 test_df['squred_error']=(test_df['predicted_price']-test_df['price'])**(2）
+
 mse=test_df['squred_error'].mean()
 rmse=mse**(1/2)
 4.多个变量
@@ -70,7 +71,40 @@ data=pd.read_csv('listing.csv')
 data=data[features]
 data['price']=data.price.str.replace('','').astype(float)
 data=data.dropna()
-data[feature]=StandarScaler().fit_transform(data[feature])
+data[feature]=StandardScaler().fit_transform(data[feature])
 normalized_db=data
 print(data.shape)
 normalized_db.head()
+norm_train_df=normalized.copy().iloc[0:2792]
+norm_test_df=normalized.copy().iloc[2792:]
+---多变量距离计算---
+from scipy.spatial import distance
+随便拿两个样本算
+first=normalized_db.iloc[0][['acommodates','bathrooms']]
+second=normalized_db.iloc[20][['acommodates','bathrooms']]
+distance=distance.euclidean(first,second) #调用欧式距离
+---多变量KNN模型----
+def predict_price_mutivariate(new_listing_value,feature_column):  
+  temp_df=train_df
+  temp_df['distance']=ditance.cdist(temp_df[feature_column],[new_listing_value[feature_column]])  #制定好要算哪个列并赋给distance
+  temp_df=temp_df.sort_values('distance') 距离排序
+  knn_5=temp_df.price.iloc[:5]  取前5个
+  predicted_price=knn5.mean()  平均值
+  return predicted_price
+cols=['accommodates','bathrooms']
+norm_test_df['predicted_price']=norm_test_df[cols].appy(predict_price_mutivariate,feature_column=cols.axis=1)
+norm_test_df['squared_error']=(norm_test_df['predicted_price']-norm_test_df['price'])**(2)
+mse=norm_test_df['squared_error'].mean()
+rmse=mse**(1/2)
+print(rmse)
+----用sklearn完成KNN----
+from sklearn.neighbors import KNeighborsRegressor 
+cols=['accommodates','bathrooms']
+knn=KNeighborsRegressor  实例化（去文档中查询里面的参数，不指定参数，默认N=5）
+knn.fit(norm_train_df[cols],norm_train_df['price'])  #告知什么是数据，什么是标签
+two_features_predictions=knn.predict(norm_test_df[cols])   #预测值
+from sklearn.metrics import mean_squared_error
+two_features_mse= mean_squared_error(norm_test_df['price'],two_features_predictions)
+two_features_rmse=mse **(1/2)
+print(two_features_rmse)
+---加入更多的特征---
