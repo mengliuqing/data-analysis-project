@@ -107,4 +107,6 @@ from sklearn.metrics import mean_squared_error
 two_features_mse= mean_squared_error(norm_test_df['price'],two_features_predictions)
 two_features_rmse=mse **(1/2)
 print(two_features_rmse)
----加入更多的特征---
+---模型的问题---
+比如1000条数据，那么模型一条条比，找5个跟我距离最近的，比1000条数据算完后，排序，前5个 算平均值
+对于任何一条数据来了都要算o(n) ，实现简单，但是太慢了，只适合小数据量。
