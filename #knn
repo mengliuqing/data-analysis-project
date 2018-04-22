@@ -49,3 +49,10 @@ test_df['predicted']=test_df.accommodates.apply(predict_price,feature_column='ac
 test_df['squred_error']=(test_df['predicted_price']-test_df['price'])**(2）
 mse=test_df['squred_error'].mean()
 rmse=mse**(1/2)
+4.多个变量
+for feature in feature:
+  test_df['predicted']=test_df[feature].apply(predict_price,feature_column=feature)
+  test_df['squred_error']=(test_df['predicted_price']-test_df['price'])**(2）
+  mse=test_df['squred_error'].mean()
+  rmse=mse**(1/2)
+  print('RMSR for the {} column :{}".format(feature,rmse))
