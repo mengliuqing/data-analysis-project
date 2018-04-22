@@ -56,3 +56,7 @@ for feature in feature:
   mse=test_df['squred_error'].mean()
   rmse=mse**(1/2)
   print('RMSR for the {} column :{}".format(feature,rmse))
+----综合考虑多个变量-----
+指标之间的度量差异很大，比如房间数和面积，用欧式距离评估的话差异很大，所以选择各种特征算出来的RMSE差别很大，怎么解决？
+对数据进行预处理-----标准化与归一化处理
+标准化
