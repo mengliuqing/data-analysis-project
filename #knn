@@ -64,5 +64,13 @@ for feature in feature:
 归一化---又叫0，1归一化
 公式 X=X-Xmin/Xmax-Xmin
 代码实现：
-from sklearn import preprocessing 
-std_scare=
+from sklearn.preprocessing import StandardScaler
+features=['accommodates','bedrooms','bathrooms','beds','price','minimum_nights','maxmun_nights','number_of_reviews']
+data=pd.read_csv('listing.csv')
+data=data[features]
+data['price']=data.price.str.replace('','').astype(float)
+data=data.dropna()
+data[feature]=StandarScaler().fit_transform(data[feature])
+normalized_db=data
+print(data.shape)
+normalized_db.head()
